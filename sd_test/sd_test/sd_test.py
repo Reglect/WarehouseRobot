@@ -1,6 +1,7 @@
 import json
 import math
 
+#list of nodes that simulates the warehouse floor planning
 A1 = '{"name": "A1", "x": 0, "y": 0, "front": "A2", "back": "null", "left": "null", "right": "B1"}'
 
 A2 = '{"name": "A2", "x": 0, "y": 1, "front": "A3", "back": "A1", "left": "null", "right": "B2"}'
@@ -29,11 +30,13 @@ D3 = '{"name": "D3", "x": 3, "y": 2, "front": "null", "back": "D2", "left": "nul
 
 Box1 = '{"name": "Box1", "left": "B3", "right": "C3"}'
 
+#currently don't know how to interact with the goal variable since returning goal['left'] yields a string rather than a dict object
 start = json.loads(A1)
 aisle1 = json.loads(C3)
 aisle2 = json.loads(B3)
 goal = json.loads(Box1)
 
+#calculates the x-coordinate difference
 def distancex(begin, end):
 	beginx = begin['x']
 	endx = end['x']
@@ -42,6 +45,7 @@ def distancex(begin, end):
 
 	return finalx
 
+#calculates the y-coordinate difference
 def distancey(begin, end):
 	beginy = begin['y']
 	endy = end['y']
@@ -50,6 +54,7 @@ def distancey(begin, end):
 
 	return finaly
 
+#when input with 2 locations, calculates the closer one of the two
 def distance_test(begin, end1, end2):
 	path1 = math.sqrt(distancex(begin, end1) ** 2 + distancey(begin, end1) ** 2)
 	path2 = math.sqrt(distancex(begin, end2) ** 2 + distancey(begin, end2) ** 2)
@@ -59,14 +64,17 @@ def distance_test(begin, end1, end2):
 	else:
 		return end2
 
+#the robot, where we starting
 class robot():
 	x = 0;
 	y = 0;
 
+#where we going
 class final_distance():
 	x = 0
 	y = 0
 
+#array for the path taken by robot to final location
 path = []
 
 #final_distance.x = distancex(start, destination)
@@ -75,6 +83,7 @@ path = []
 final_distance.x = distancex(start, aisle1)
 final_distance.y = distancey(start, aisle1)
 
+#loop to move from start to end, moves in x direction first and then y direction
 while(robot.x != final_distance.x and robot.y != final_distance.y):
 	while(robot.x != final_distance.x):
 		if(final_distance.x > robot.x):
@@ -96,6 +105,7 @@ while(robot.x != final_distance.x and robot.y != final_distance.y):
 		print("Path taken: ", x)
 	path.reverse()
 
+#goes in reverse to get back to beginning
 for x in path:
 	if(x == "left"):
 		robot.x += 1
